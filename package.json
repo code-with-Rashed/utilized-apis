@@ -1,5 +1,6 @@
 {
-  "name": "show-informations-using-apis",
+  "name": "utilized-apis",
+  "description": "Show information's by utilize deferent APIS",
   "version": "0.0.0",
   "private": true,
   "type": "module",

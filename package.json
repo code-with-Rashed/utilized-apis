@@ -3,6 +3,7 @@
   "description": "Show information's by utilize deferent APIS",
   "version": "0.0.0",
   "private": true,
+  "homepage": "https://code-with-rashed.github.io/utilized-apis",
   "type": "module",
   "scripts": {
     "dev": "vite",

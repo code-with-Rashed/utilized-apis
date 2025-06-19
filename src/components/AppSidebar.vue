@@ -1,6 +1,6 @@
 <script setup>
 import { RouterLink } from 'vue-router';
-import { RefreshCcw, Minus, Plus } from 'lucide-vue-next';
+import { Minus, Plus } from 'lucide-vue-next';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import {
   Sidebar,
@@ -32,9 +32,9 @@ const props = defineProps({
           <SidebarMenuButton size="lg" as-child>
             <a href="#">
               <div
-                class="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground"
+                class="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-accent text-sidebar-primary-foreground shadow"
               >
-                <RefreshCcw class="size-4" />
+                <img src="../../public/media/logo.png" alt="logo" />
               </div>
               <div class="flex flex-col gap-0.5 leading-none">
                 <span class="font-medium">Utilized Different API</span>

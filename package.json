@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
+  "homepage": "https://code-with-Rashed.github.io/utilized-apis",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

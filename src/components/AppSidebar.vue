@@ -52,8 +52,10 @@ const props = defineProps({
               <CollapsibleTrigger as-child>
                 <SidebarMenuButton>
                   Country's Information
-                  <Plus class="ml-auto group-data-[state=open]/collapsible:hidden" />
-                  <Minus class="ml-auto group-data-[state=closed]/collapsible:hidden" />
+                  <Plus class="ml-auto group-data-[state=open]/collapsible:hidden cursor-pointer" />
+                  <Minus
+                    class="ml-auto group-data-[state=closed]/collapsible:hidden cursor-pointer"
+                  />
                 </SidebarMenuButton>
               </CollapsibleTrigger>
               <CollapsibleContent>

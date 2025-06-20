@@ -63,9 +63,13 @@ const props = defineProps({
                   <SidebarMenuSubItem>
                     <SidebarMenuSubButton
                       as-child
-                      :is-active="$route.name === 'home' ? true : false"
+                      :is-active="$route.name === 'country-show-by-name' ? true : false"
                     >
-                      <RouterLink :to="{ name: 'home' }">Home</RouterLink>
+                      <RouterLink
+                        :to="{ name: 'country-show-by-name' }"
+                        title="Show country information search by name ."
+                        >Show by name</RouterLink
+                      >
                     </SidebarMenuSubButton>
                   </SidebarMenuSubItem>
                 </SidebarMenuSub>

@@ -30,7 +30,7 @@ const getCountryInformation = async (name) => {
   try {
     const data = await fetch('https://restcountries.com/v3.1/name/' + name);
     const response = await data.json();
-    showSearchedCountryInfo.value = response;
+    showSearchedCountryInfo.value = response[0];
   } catch (error) {
     errorMessage.value = error.message;
   }
@@ -70,10 +70,76 @@ onMounted(() => {
     <Button class="ms-2 cursor-pointer" @click="searchCountryByName">Search</Button>
   </div>
   <div class="flex justify-center mt-2">
-    <Card class="w-[600px]">
+    <Card class="w-[500px]">
       <CardContent>
         <!-- show country information -->
-        {{ showSearchedCountryInfo }}
+        <template v-if="showSearchedCountryInfo">
+          <div>
+            <img
+              :src="showSearchedCountryInfo.flags.svg"
+              :alt="showSearchedCountryInfo.flags.alt"
+              :srcset="showSearchedCountryInfo.flags.png"
+              class="w-full h-full"
+            />
+          </div>
+          <div class="mt-2">
+            <div>
+              <strong>Country Name : </strong><span>{{ showSearchedCountryInfo.name.common }}</span>
+            </div>
+            <div>
+              <strong>Official Name : </strong
+              ><span>{{ showSearchedCountryInfo.name.official }}</span>
+            </div>
+            <div>
+              <strong>Capital : </strong><span>{{ showSearchedCountryInfo.capital }}</span>
+            </div>
+            <div>
+              <strong>Languages : </strong
+              ><span>{{
+                showSearchedCountryInfo.languages
+                  ? Object.values(showSearchedCountryInfo.languages).join(', ')
+                  : 'N/A'
+              }}</span>
+            </div>
+            <div>
+              <strong>Region & Subregion : </strong
+              ><span
+                >{{ showSearchedCountryInfo.region }} ,
+                {{ showSearchedCountryInfo.subregion }}</span
+              >
+            </div>
+            <div>
+              <strong>Area : </strong
+              ><span
+                >{{ showSearchedCountryInfo.area.toLocaleString('en-US') }} KM<sup class="font-bold"
+                  >2</sup
+                ></span
+              >
+            </div>
+            <div>
+              <strong>Population : </strong
+              ><span>{{ showSearchedCountryInfo.population.toLocaleString('en-US') }}</span>
+            </div>
+            <div>
+              <strong>Map Links : </strong
+              ><span
+                ><a
+                  :href="showSearchedCountryInfo.maps.googleMaps"
+                  target="_blank"
+                  class="underline text-green-600"
+                  >Google Maps</a
+                >
+                ,
+                <a
+                  :href="showSearchedCountryInfo.maps.openStreetMaps"
+                  target="_blank"
+                  class="underline text-green-600"
+                  >Open Street Map</a
+                >
+              </span>
+            </div>
+          </div>
+        </template>
       </CardContent>
     </Card>
   </div>

@@ -11,9 +11,16 @@ const router = createRouter({
       path: '/country',
       children: [
         {
-          path: '/show-by-name',
+          path: 'show-by-name',
           name: 'country-show-by-name',
           component: CountryShowByName,
+          meta: { title: 'Show country information.' },
+        },
+        {
+          path: 'show-by-world-regions',
+          name: 'country-show-by-world-regions',
+          component: () => import('@/views/countries_api/CountryShowByWorldRegions.vue'),
+          meta: { title: 'Show world regions countries.' },
         },
       ],
     },

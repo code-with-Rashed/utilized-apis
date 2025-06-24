@@ -14,6 +14,7 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/s
 </script>
 
 <template>
+  <title>{{ $route.meta.title }}</title>
   <SidebarProvider>
     <AppSidebar />
     <SidebarInset>
@@ -23,7 +24,9 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/s
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem class="hidden md:block">
-              <BreadcrumbLink href="#"> Building Your Application </BreadcrumbLink>
+              <BreadcrumbLink>
+                <RouterLink :to="{ name: $route.name }">{{ $route.meta.title }}</RouterLink>
+              </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator class="hidden md:block" />
             <BreadcrumbItem>

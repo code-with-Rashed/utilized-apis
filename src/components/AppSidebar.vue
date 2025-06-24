@@ -72,6 +72,19 @@ const props = defineProps({
                       >
                     </SidebarMenuSubButton>
                   </SidebarMenuSubItem>
+
+                  <SidebarMenuSubItem>
+                    <SidebarMenuSubButton
+                      as-child
+                      :is-active="$route.name === 'country-show-by-world-regions' ? true : false"
+                    >
+                      <RouterLink
+                        :to="{ name: 'country-show-by-world-regions' }"
+                        title="Show country information by world regions ."
+                        >Show by world regions</RouterLink
+                      >
+                    </SidebarMenuSubButton>
+                  </SidebarMenuSubItem>
                 </SidebarMenuSub>
               </CollapsibleContent>
             </SidebarMenuItem>

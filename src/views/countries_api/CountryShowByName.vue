@@ -47,13 +47,12 @@ const getCountryInformation = async (name) => {
 };
 // get visitor information by ip address
 const getVisitorInfo = async () => {
-  let nameOfCountry = '';
+  let nameOfCountry = 'Bangladesh'; // default country name is Bangladesh .
   try {
     const data = await fetch('http://ip-api.com/json');
     const response = await data.json();
     nameOfCountry = response.country;
   } catch (error) {
-    nameOfCountry = null;
     errorMessage.value = error.message;
   }
   return nameOfCountry;

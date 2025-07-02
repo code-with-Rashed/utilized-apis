@@ -24,6 +24,12 @@ const router = createRouter({
         },
       ],
     },
+    {
+      path: '/show-random-and-customize-image',
+      name: 'show-random-and-customize-image',
+      component: () => import('@/views/picsum_api/ShowRandomAndCustomizeImage.vue'),
+      meta: { title: 'Show random and customize image' },
+    },
   ],
 });
 

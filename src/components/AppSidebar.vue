@@ -89,6 +89,35 @@ const props = defineProps({
               </CollapsibleContent>
             </SidebarMenuItem>
           </Collapsible>
+          <Collapsible class="group/collapsible">
+            <SidebarMenuItem>
+              <CollapsibleTrigger as-child>
+                <SidebarMenuButton>
+                  Lorem Picsum
+                  <Plus class="ml-auto group-data-[state=open]/collapsible:hidden cursor-pointer" />
+                  <Minus
+                    class="ml-auto group-data-[state=closed]/collapsible:hidden cursor-pointer"
+                  />
+                </SidebarMenuButton>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <SidebarMenuSub>
+                  <SidebarMenuSubItem>
+                    <SidebarMenuSubButton
+                      as-child
+                      :is-active="$route.name === 'show-random-and-customize-image' ? true : false"
+                    >
+                      <RouterLink
+                        :to="{ name: 'show-random-and-customize-image' }"
+                        title="Show random and customize image ."
+                        >Random & Custom Image</RouterLink
+                      >
+                    </SidebarMenuSubButton>
+                  </SidebarMenuSubItem>
+                </SidebarMenuSub>
+              </CollapsibleContent>
+            </SidebarMenuItem>
+          </Collapsible>
         </SidebarMenu>
       </SidebarGroup>
     </SidebarContent>

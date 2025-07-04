@@ -2,7 +2,7 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
-import { CloudDownload, SquarePen } from 'lucide-vue-next';
+import { CloudDownload, SquarePen, ImageDown } from 'lucide-vue-next';
 import { Badge } from '@/components/ui/badge';
 import {
   Pagination,
@@ -20,6 +20,8 @@ const showPicsumPhotos = ref('');
 const page = ref(1);
 const totalPage = 1000;
 const limit = ref(10);
+const downloadLoader = ref(false);
+const selectedDownloadLoader = ref(null);
 
 const changePage = async (currentPage) => {
   page.value = currentPage;
@@ -51,6 +53,8 @@ const getPicsumPhotos = async (page, limit) => {
 };
 // start preparation for download the selected image
 const downloadImage = async (imageIndex) => {
+  downloadLoader.value = true;
+  selectedDownloadLoader.value = imageIndex;
   const imageDetails = showPicsumPhotos.value;
   const data = await fetch(imageDetails[imageIndex].download_url);
   const response = await data.blob();
@@ -62,6 +66,7 @@ const downloadImage = async (imageIndex) => {
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
+  downloadLoader.value = false;
 };
 onMounted(() => {
   getPicsumPhotos(page.value, limit.value);
@@ -115,12 +120,24 @@ onMounted(() => {
                     <SquarePen />
                   </Button>
                   <Button
-                    as="a"
                     title="Download this image"
                     class="cursor-pointer ms-1"
                     @click="downloadImage(i)"
+                    :disabled="downloadLoader && selectedDownloadLoader === i"
                   >
-                    <CloudDownload class="fond-bold" />
+                    <ImageDown
+                      class="animate-bounce"
+                      v-if="downloadLoader && selectedDownloadLoader === i"
+                    />
+                    <CloudDownload
+                      class="fond-bold"
+                      v-if="
+                        !(
+                          downloadLoader &&
+                          (selectedDownloadLoader ? selectedDownloadLoader === i : false)
+                        )
+                      "
+                    />
                   </Button>
                 </div>
               </div>

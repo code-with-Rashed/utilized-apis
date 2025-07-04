@@ -49,6 +49,20 @@ const getPicsumPhotos = async (page, limit) => {
     skeletonLoader.value = false;
   }
 };
+// start preparation for download the selected image
+const downloadImage = async (imageIndex) => {
+  const imageDetails = showPicsumPhotos.value;
+  const data = await fetch(imageDetails[imageIndex].download_url);
+  const response = await data.blob();
+  const objectUrl = URL.createObjectURL(response);
+  const link = document.createElement('a');
+  link.setAttribute('href', objectUrl);
+  link.setAttribute('download', `${imageIndex}.png`);
+  link.style.display = 'none';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
 onMounted(() => {
   getPicsumPhotos(page.value, limit.value);
 });
@@ -100,7 +114,12 @@ onMounted(() => {
                   <Button as="a" title="Edit this image" class="cursor-pointer">
                     <SquarePen />
                   </Button>
-                  <Button as="a" title="Download this image" class="cursor-pointer ms-1">
+                  <Button
+                    as="a"
+                    title="Download this image"
+                    class="cursor-pointer ms-1"
+                    @click="downloadImage(i)"
+                  >
                     <CloudDownload class="fond-bold" />
                   </Button>
                 </div>

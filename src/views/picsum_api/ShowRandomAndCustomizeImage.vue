@@ -4,13 +4,35 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { CloudDownload, SquarePen } from 'lucide-vue-next';
 import { Badge } from '@/components/ui/badge';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination';
 import { ref, onMounted } from 'vue';
 
 const skeletonLoader = ref(true);
 const errorMessage = ref(null);
 const showPicsumPhotos = ref('');
 const page = ref(1);
+const totalPage = 1000;
 const limit = ref(10);
+
+const changePage = async (currentPage) => {
+  page.value = currentPage;
+  await getPicsumPhotos(page.value, limit.value);
+};
+const nextPage = async () => {
+  page.value++;
+  await getPicsumPhotos(page.value, limit.value);
+};
+const previousPage = async () => {
+  page.value--;
+  await getPicsumPhotos(page.value, limit.value);
+};
 
 // get photo list from picsum photo api
 const getPicsumPhotos = async (page, limit) => {
@@ -22,7 +44,6 @@ const getPicsumPhotos = async (page, limit) => {
     if (!response.length) throw new Error('Image not found !');
     showPicsumPhotos.value = response;
     skeletonLoader.value = false;
-    console.log(showPicsumPhotos.value);
   } catch (error) {
     errorMessage.value = error.message;
     skeletonLoader.value = false;
@@ -72,21 +93,45 @@ onMounted(() => {
                     >Author :
                     <a :href="picsumPhoto.url" target="_blank" class="underline">{{
                       picsumPhoto.author
-                    }}</a></Badge
-                  >
+                    }}</a>
+                  </Badge>
                 </div>
                 <div>
-                  <Button as="a" title="Edit this image" class="cursor-pointer"
-                    ><SquarePen
-                  /></Button>
-                  <Button as="a" title="Download this image" class="cursor-pointer ms-1"
-                    ><CloudDownload class="fond-bold"
-                  /></Button>
+                  <Button as="a" title="Edit this image" class="cursor-pointer">
+                    <SquarePen />
+                  </Button>
+                  <Button as="a" title="Download this image" class="cursor-pointer ms-1">
+                    <CloudDownload class="fond-bold" />
+                  </Button>
                 </div>
               </div>
             </CardContent>
           </Card>
         </template>
+        <Pagination
+          v-slot="{ page }"
+          :items-per-page="limit"
+          :default-page="page"
+          :total="totalPage"
+          class="mt-4"
+        >
+          <PaginationContent v-slot="{ items }">
+            <PaginationPrevious @click="previousPage" class="cursor-pointer" />
+            <template v-for="(item, index) in items" :key="index">
+              <PaginationItem
+                class="cursor-pointer"
+                v-if="item.type === 'page'"
+                :value="item.value"
+                :is-active="item.value === page"
+                @click="changePage(item.value)"
+              >
+                {{ item.value }}
+              </PaginationItem>
+            </template>
+            <PaginationEllipsis :index="4" />
+            <PaginationNext @click="nextPage" class="cursor-pointer" />
+          </PaginationContent>
+        </Pagination>
       </template>
     </template>
   </div>

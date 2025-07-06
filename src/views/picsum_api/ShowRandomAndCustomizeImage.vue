@@ -21,7 +21,6 @@ const page = ref(1);
 const totalPage = 1000;
 const limit = ref(10);
 const downloadLoader = ref(false);
-const selectedDownloadLoader = ref(null);
 
 const changePage = async (currentPage) => {
   page.value = currentPage;
@@ -51,22 +50,42 @@ const getPicsumPhotos = async (page, limit) => {
     skeletonLoader.value = false;
   }
 };
-// start preparation for download the selected image
-const downloadImage = async (imageIndex) => {
-  downloadLoader.value = true;
-  selectedDownloadLoader.value = imageIndex;
-  const imageDetails = showPicsumPhotos.value;
-  const data = await fetch(imageDetails[imageIndex].download_url);
-  const response = await data.blob();
-  const objectUrl = URL.createObjectURL(response);
+
+// change download button style and behaviour after click the download button
+const toggleDownloadButttonStyle = (targetedDownloadButton) => {
+  if (downloadLoader.value) {
+    targetedDownloadButton.target.disabled = true;
+    Array.from(targetedDownloadButton.target.children).forEach((element) => {
+      element.classList.toggle('hidden');
+    });
+  } else {
+    Array.from(targetedDownloadButton.target.children).forEach((element) => {
+      element.classList.toggle('hidden');
+    });
+    targetedDownloadButton.target.disabled = false;
+  }
+};
+// download the image automatically
+const downloadImage = (imageUrl, imageName = 'name', imageType = 'png') => {
   const link = document.createElement('a');
-  link.setAttribute('href', objectUrl);
-  link.setAttribute('download', `${imageIndex}.png`);
+  link.setAttribute('href', imageUrl);
+  link.setAttribute('download', `${imageName}.${imageType}`);
   link.style.display = 'none';
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
+};
+// start preparation for download the selected image
+const preparerDownloadImage = async (event) => {
+  downloadLoader.value = true;
+  toggleDownloadButttonStyle(event);
+  const imageId = event.target.dataset.imageId;
+  const url = showPicsumPhotos.value[imageId].download_url;
+  const data = await fetch(url);
+  const response = await data.blob();
+  downloadImage(URL.createObjectURL(response), imageId);
   downloadLoader.value = false;
+  toggleDownloadButttonStyle(event);
 };
 onMounted(() => {
   getPicsumPhotos(page.value, limit.value);
@@ -100,7 +119,7 @@ onMounted(() => {
         </Card>
       </template>
       <template v-else>
-        <template v-for="(picsumPhoto, i) in showPicsumPhotos" :key="i">
+        <template v-for="picsumPhoto in showPicsumPhotos" :key="picsumPhoto.id">
           <Card class="w-[400px] m-2">
             <CardContent>
               <div>
@@ -122,22 +141,11 @@ onMounted(() => {
                   <Button
                     title="Download this image"
                     class="cursor-pointer ms-1"
-                    @click="downloadImage(i)"
-                    :disabled="downloadLoader && selectedDownloadLoader === i"
+                    @click="preparerDownloadImage"
+                    :data-image-id="picsumPhoto.id"
                   >
-                    <ImageDown
-                      class="animate-bounce"
-                      v-if="downloadLoader && selectedDownloadLoader === i"
-                    />
-                    <CloudDownload
-                      class="fond-bold"
-                      v-if="
-                        !(
-                          downloadLoader &&
-                          (selectedDownloadLoader ? selectedDownloadLoader === i : false)
-                        )
-                      "
-                    />
+                    <ImageDown class="animate-bounce hidden" />
+                    <CloudDownload class="fond-bold" />
                   </Button>
                 </div>
               </div>

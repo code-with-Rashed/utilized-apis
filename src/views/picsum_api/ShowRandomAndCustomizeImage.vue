@@ -79,11 +79,11 @@ const downloadImage = (imageUrl, imageName = 'name', imageType = 'png') => {
 const preparerDownloadImage = async (event) => {
   downloadLoader.value = true;
   toggleDownloadButttonStyle(event);
-  const imageId = event.target.dataset.imageId;
-  const url = showPicsumPhotos.value[imageId].download_url;
-  const data = await fetch(url);
+  const imageIndex = event.target.dataset.imageIndex;
+  const imageInfo = showPicsumPhotos.value[imageIndex];
+  const data = await fetch(imageInfo.download_url);
   const response = await data.blob();
-  downloadImage(URL.createObjectURL(response), imageId);
+  downloadImage(URL.createObjectURL(response), imageInfo.id);
   downloadLoader.value = false;
   toggleDownloadButttonStyle(event);
 };
@@ -119,11 +119,15 @@ onMounted(() => {
         </Card>
       </template>
       <template v-else>
-        <template v-for="picsumPhoto in showPicsumPhotos" :key="picsumPhoto.id">
+        <template v-for="(picsumPhoto, i) in showPicsumPhotos" :key="i">
           <Card class="w-[400px] m-2">
             <CardContent>
               <div>
-                <img :src="picsumPhoto.download_url" alt="photo" class="rounded" />
+                <img
+                  :src="picsumPhoto.download_url"
+                  alt="photo"
+                  class="rounded aspect-3/2 object-cover"
+                />
               </div>
               <div class="flex justify-between mt-1">
                 <div>
@@ -142,7 +146,7 @@ onMounted(() => {
                     title="Download this image"
                     class="cursor-pointer ms-1"
                     @click="preparerDownloadImage"
-                    :data-image-id="picsumPhoto.id"
+                    :data-image-index="i"
                   >
                     <ImageDown class="animate-bounce hidden" />
                     <CloudDownload class="fond-bold" />

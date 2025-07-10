@@ -4,6 +4,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { CloudDownload, SquarePen, ImageDown } from 'lucide-vue-next';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Slider } from '@/components/ui/slider';
 import {
   Pagination,
   PaginationContent,
@@ -12,7 +15,25 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination';
-import { ref, onMounted } from 'vue';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { ref, onMounted, reactive, watch } from 'vue';
 
 const skeletonLoader = ref(true);
 const errorMessage = ref(null);
@@ -21,6 +42,17 @@ const page = ref(1);
 const totalPage = 1000;
 const limit = ref(10);
 const downloadLoader = ref(false);
+const openModal = ref(false);
+const previewImage = ref(null);
+const editingImageInfo = reactive({
+  imageId: null,
+  imageWidth: null,
+  imageHeight: null,
+  imageBlur: [0],
+  imageGray: [0],
+  imageName: '',
+  imageType: '',
+});
 
 const changePage = async (currentPage) => {
   page.value = currentPage;
@@ -87,6 +119,56 @@ const preparerDownloadImage = async (event) => {
   downloadLoader.value = false;
   toggleDownloadButttonStyle(event);
 };
+// start preparation before editing the selected image
+const preparerBeforeEditImage = (event) => {
+  openModal.value = !openModal.value;
+  const imageIndex = event.target.dataset.imageIndex;
+  const imageInfo = showPicsumPhotos.value[imageIndex];
+  previewImage.value = imageInfo.download_url;
+  editingImageInfo.imageId = imageInfo.id;
+  editingImageInfo.imageWidth = imageInfo.width;
+  editingImageInfo.imageHeight = imageInfo.height;
+};
+// start preparation download the edited image
+const prepareEditedImageDownload = async (event) => {
+  downloadLoader.value = true;
+  toggleDownloadButttonStyle(event);
+  let url = 'https://picsum.photos/';
+  url += `id/${editingImageInfo.imageId}`;
+  url += `/${editingImageInfo.imageWidth}`;
+  url += `/${editingImageInfo.imageHeight}`;
+  if (editingImageInfo.imageBlur[0] > 0 && editingImageInfo.imageGray[0] > 0) {
+    url += `?blur=${editingImageInfo.imageBlur[0]}&grayscale=${editingImageInfo.imageGray[0]}`;
+  } else if (editingImageInfo.imageBlur[0] > 0) {
+    url += `?blur=${editingImageInfo.imageBlur[0]}`;
+  } else if (editingImageInfo.imageGray[0] > 0) {
+    url += `?grayscale=${editingImageInfo.imageGray[0]}`;
+  }
+  const data = await fetch(url);
+  const response = await data.blob();
+  downloadImage(
+    URL.createObjectURL(response),
+    editingImageInfo.imageName,
+    editingImageInfo.imageType,
+  );
+  downloadLoader.value = false;
+  toggleDownloadButttonStyle(event);
+};
+// clear edited image information
+const clearEditedImageInfo = () => {
+  editingImageInfo.imageId = null;
+  editingImageInfo.imageWidth = null;
+  editingImageInfo.imageHeight = null;
+  editingImageInfo.imageBlur = [0];
+  editingImageInfo.imageGray = [0];
+  editingImageInfo.imageName = '';
+  editingImageInfo.imageType = '';
+};
+// clear the edited image information when close the editing modal / panel
+watch(openModal, (modalStatus) => {
+  if (!modalStatus) clearEditedImageInfo();
+});
+
 onMounted(() => {
   getPicsumPhotos(page.value, limit.value);
 });
@@ -139,7 +221,12 @@ onMounted(() => {
                   </Badge>
                 </div>
                 <div>
-                  <Button as="a" title="Edit this image" class="cursor-pointer">
+                  <Button
+                    @click="preparerBeforeEditImage"
+                    title="Edit this image"
+                    class="cursor-pointer"
+                    :data-image-index="i"
+                  >
                     <SquarePen />
                   </Button>
                   <Button
@@ -180,6 +267,117 @@ onMounted(() => {
             <PaginationNext @click="nextPage" class="cursor-pointer" />
           </PaginationContent>
         </Pagination>
+        <!-- this dialog open for image editing & downloading proccess -->
+        <Dialog v-model:open="openModal">
+          <DialogContent
+            class="sm:max-w-[500px] grid-rows-[auto_minmax(0,1fr)_auto] p-0 max-h-[90dvh]"
+          >
+            <DialogHeader class="p-6 pb-0">
+              <DialogTitle>Edit image & download</DialogTitle>
+              <DialogDescription>
+                You can change this image width , hight & variant than download your required file
+                format.
+              </DialogDescription>
+            </DialogHeader>
+            <div class="grid gap-4 py-4 overflow-y-auto px-6">
+              <div class="flex flex-col justify-between h-[55dvh]">
+                <div>
+                  <img :src="previewImage" alt="image" class="rounded" />
+                  <div class="flex justify-between mt-3 mb-6">
+                    <div>
+                      <Label for="width">Image Width ( px )</Label>
+                      <Input
+                        id="width"
+                        type="number"
+                        placeholder="Image width"
+                        class="my-2"
+                        v-model="editingImageInfo.imageWidth"
+                      />
+                    </div>
+                    <div class="ms-2">
+                      <Label for="height"
+                        >Image height ( px ) {{ editingImageInfo.imageHeight }}</Label
+                      >
+                      <Input
+                        id="height"
+                        type="number"
+                        placeholder="Image height"
+                        class="my-2"
+                        v-model="editingImageInfo.imageHeight"
+                      />
+                    </div>
+                  </div>
+                  <div class="mb-5">
+                    <Label class="mb-3"
+                      >Blur this image ( {{ editingImageInfo.imageBlur[0] }}% )</Label
+                    >
+                    <Slider
+                      :default-value="[1]"
+                      :max="10"
+                      :step="1"
+                      v-model="editingImageInfo.imageBlur"
+                      title="Blur this image"
+                      class="cursor-pointer"
+                    />
+                  </div>
+                  <div class="mb-6">
+                    <Label class="mb-3"
+                      >Gray this image ( {{ editingImageInfo.imageGray[0] }}% )</Label
+                    >
+                    <Slider
+                      :default-value="[1]"
+                      :max="100"
+                      :step="1"
+                      v-model="editingImageInfo.imageGray"
+                      title="Gray this image"
+                      class="cursor-pointer"
+                    />
+                  </div>
+                  <div class="mb-5">
+                    <Label class="mb-3">Type a file name</Label>
+                    <Input v-model="editingImageInfo.imageName" placeholder="image name..." />
+                  </div>
+                  <div>
+                    <Label class="mb-3">Select a image download Type</Label>
+                    <Select v-model="editingImageInfo.imageType">
+                      <SelectTrigger class="w-full">
+                        <SelectValue placeholder="Select image download type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectLabel>File Type</SelectLabel>
+                          <SelectItem value="jpg"> JPG </SelectItem>
+                          <SelectItem value="jpeg"> JPEG </SelectItem>
+                          <SelectItem value="png"> PNG </SelectItem>
+                          <SelectItem value="webp"> WEBP </SelectItem>
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <DialogFooter class="p-6 pt-0">
+              <DialogClose>
+                <Button
+                  class="cursor-pointer bg-red-500 hover:bg-red-600"
+                  type="button"
+                  title="Cancel this image"
+                  >Cancel</Button
+                >
+              </DialogClose>
+              <Button
+                type="button"
+                class="cursor-pointer"
+                title="Download this image"
+                @click="prepareEditedImageDownload"
+              >
+                <ImageDown class="animate-bounce hidden" />
+                <CloudDownload class="fond-bold" />
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </template>
     </template>
   </div>

@@ -87,6 +87,7 @@ onMounted(() => {
                   :src="continentsCountry.flags.svg"
                   :alt="continentsCountry.flags.alt"
                   :srcset="continentsCountry.flags.png"
+                  class="rounded aspect-3/2 object-cover"
                 />
               </div>
               <div class="mt-2">

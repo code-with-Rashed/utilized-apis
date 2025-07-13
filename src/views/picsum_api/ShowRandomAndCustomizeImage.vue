@@ -2,7 +2,7 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
-import { CloudDownload, SquarePen, ImageDown } from 'lucide-vue-next';
+import { CloudDownload, SquarePen, ImageDown, Images } from 'lucide-vue-next';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -221,6 +221,15 @@ onMounted(() => {
                   </Badge>
                 </div>
                 <div>
+                  <Button
+                    as="a"
+                    :href="picsumPhoto.url"
+                    target="_blank"
+                    title="Look Related Images"
+                    class="cursor-pointer me-1"
+                  >
+                    <Images />
+                  </Button>
                   <Button
                     @click="preparerBeforeEditImage"
                     title="Edit this image"

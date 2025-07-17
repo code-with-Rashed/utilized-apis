@@ -11,6 +11,18 @@ import {
 } from '@/components/ui/breadcrumb';
 import { Separator } from '@/components/ui/separator';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
+import { Sun, Moon } from 'lucide-vue-next';
+import { Button } from '@/components/ui/button';
+import { ref } from 'vue';
+
+// change theme between dark & normal mode
+const themeButton = ref(false);
+const body = document.body;
+const changeTheme = () => {
+  const dark = body.classList.contains('dark');
+  dark ? body.classList.remove('dark') : body.classList.add('dark');
+  themeButton.value = !themeButton.value;
+};
 </script>
 
 <template>
@@ -34,6 +46,24 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/s
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
+        <!-- dark mode -->
+        <div class="absolute top-5 right-4">
+          <template v-if="themeButton">
+            <Button class="shadow-md cursor-pointer" size="icon" @click="changeTheme">
+              <Sun />
+            </Button>
+          </template>
+          <template v-else>
+            <Button
+              variant="secondary"
+              class="shadow-md cursor-pointer"
+              size="icon"
+              @click="changeTheme"
+            >
+              <Moon />
+            </Button>
+          </template>
+        </div>
       </header>
       <div class="flex flex-1 flex-col gap-4 p-4">
         <RouterView />

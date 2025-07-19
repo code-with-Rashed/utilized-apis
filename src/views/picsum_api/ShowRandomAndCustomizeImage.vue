@@ -215,9 +215,12 @@ onMounted(() => {
                 <div>
                   <Badge
                     >Author :
-                    <a :href="picsumPhoto.url" target="_blank" class="underline">{{
-                      picsumPhoto.author
-                    }}</a>
+                    <a
+                      :href="picsumPhoto.url"
+                      target="_blank"
+                      class="underline truncate w-24 sm:w-full"
+                      >{{ picsumPhoto.author }}</a
+                    >
                   </Badge>
                 </div>
                 <div>
@@ -245,7 +248,7 @@ onMounted(() => {
                     :data-image-index="i"
                   >
                     <ImageDown class="animate-bounce hidden" />
-                    <CloudDownload class="fond-bold" />
+                    <CloudDownload class="font-bold" />
                   </Button>
                 </div>
               </div>
@@ -366,10 +369,11 @@ onMounted(() => {
                 </div>
               </div>
             </div>
+            <hr class="border-t-3 border-secondary-500" />
             <DialogFooter class="p-6 pt-0">
               <DialogClose>
                 <Button
-                  class="cursor-pointer bg-red-500 hover:bg-red-600"
+                  class="cursor-pointer bg-red-500 hover:bg-red-600 w-full sm:w-24"
                   type="button"
                   title="Cancel this image"
                   >Cancel</Button
@@ -382,7 +386,7 @@ onMounted(() => {
                 @click="prepareEditedImageDownload"
               >
                 <ImageDown class="animate-bounce hidden" />
-                <CloudDownload class="fond-bold" />
+                <CloudDownload class="font-bold" />
               </Button>
             </DialogFooter>
           </DialogContent>

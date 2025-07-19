@@ -47,7 +47,7 @@ const changeTheme = () => {
           </BreadcrumbList>
         </Breadcrumb>
         <!-- dark mode -->
-        <div class="absolute top-5 right-4">
+        <div class="absolute top-4 right-4">
           <template v-if="themeButton">
             <Button class="shadow-md cursor-pointer" size="icon" @click="changeTheme">
               <Sun />

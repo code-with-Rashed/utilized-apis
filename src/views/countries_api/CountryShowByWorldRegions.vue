@@ -2,13 +2,27 @@
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ref, onMounted } from 'vue';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { ref, onMounted, watch } from 'vue';
 
 const worldContinents = ['asia', 'africa', 'north america', 'south america', 'europe', 'oceania'];
 const skeletonLoader = ref(true);
 const showContinentsCountryInfo = ref('');
 const errorMessage = ref(null);
+const selectedContinentIndex = ref();
 
+watch(selectedContinentIndex, () => {
+  getSelectedContinentCountryInformation(selectedContinentIndex.value);
+});
 // get selected continent country information
 const getSelectedContinentCountryInformation = async (selectedContinent) => {
   await getContinentCountryInformation(worldContinents[selectedContinent]);
@@ -37,19 +51,41 @@ onMounted(() => {
 </script>
 <template>
   <div class="flex justify-center">
-    <Tabs :default-value="worldContinents[0]" class="w-[500px]">
-      <TabsList>
-        <template v-for="(continentName, i) in worldContinents" :key="i">
-          <TabsTrigger
-            :value="continentName"
-            class="uppercase cursor-pointer"
-            @click="getSelectedContinentCountryInformation(i)"
-          >
-            {{ continentName }}
-          </TabsTrigger>
-        </template>
-      </TabsList>
-    </Tabs>
+    <div class="hidden md:block">
+      <Tabs :default-value="worldContinents[0]" class="w-[500px]">
+        <TabsList>
+          <template v-for="(continentName, i) in worldContinents" :key="i">
+            <TabsTrigger
+              :value="continentName"
+              class="uppercase cursor-pointer"
+              @click="getSelectedContinentCountryInformation(i)"
+            >
+              {{ continentName }}
+            </TabsTrigger>
+          </template>
+        </TabsList>
+      </Tabs>
+    </div>
+    <div class="md:hidden">
+      <Label class="block mb-2 font-normal"
+        >Select a world region & get world region-wise country information.</Label
+      >
+      <Select v-model="selectedContinentIndex">
+        <SelectTrigger class="w-full">
+          <SelectValue :placeholder="worldContinents[0]" class="uppercase" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectGroup>
+            <SelectLabel>World Regions</SelectLabel>
+            <template v-for="(continentName, i) in worldContinents" :key="i">
+              <SelectItem :value="i" class="uppercase cursor-pointer">
+                {{ continentName }}
+              </SelectItem>
+            </template>
+          </SelectGroup>
+        </SelectContent>
+      </Select>
+    </div>
   </div>
 
   <div class="flex flex-wrap justify-center mt-2">

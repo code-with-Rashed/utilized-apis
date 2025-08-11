@@ -18,9 +18,12 @@ import { ref } from 'vue';
 // change theme between dark & normal mode
 const themeButton = ref(false);
 const body = document.body;
+const selectedTheme = localStorage.getItem('selectedTheme');
+selectedTheme ? body.classList.add(selectedTheme) : '';
 const changeTheme = () => {
   const dark = body.classList.contains('dark');
   dark ? body.classList.remove('dark') : body.classList.add('dark');
+  dark ? localStorage.removeItem('selectedTheme') : localStorage.setItem('selectedTheme', 'dark');
   themeButton.value = !themeButton.value;
 };
 </script>

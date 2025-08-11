@@ -211,16 +211,13 @@ onMounted(() => {
                   class="rounded aspect-3/2 object-cover"
                 />
               </div>
-              <div class="flex justify-between mt-1">
-                <div>
+              <div class="flex flex-col sm:flex-row justify-between mt-1">
+                <div class="mb-3 sm:mb-0">
                   <Badge
                     >Author :
-                    <a
-                      :href="picsumPhoto.url"
-                      target="_blank"
-                      class="underline truncate w-24 sm:w-full"
-                      >{{ picsumPhoto.author }}</a
-                    >
+                    <a :href="picsumPhoto.url" target="_blank" class="underline truncate">{{
+                      picsumPhoto.author
+                    }}</a>
                   </Badge>
                 </div>
                 <div>

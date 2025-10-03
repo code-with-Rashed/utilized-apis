@@ -5,11 +5,43 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ref, onMounted } from 'vue';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Map } from 'lucide-vue-next';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 
 const skeletonLoader = ref(true);
 const searchedCountryName = ref('');
 const showSearchedCountryInfo = ref('');
 const errorMessage = ref(null);
+const popupSkeletonLoader = ref(false);
+const openModal = ref(false);
+
+// open map for show country
+const openMap = async (latlng, countryName) => {
+  openModal.value = !openModal.value;
+  popupSkeletonLoader.value = true;
+  const latitude = latlng[0];
+  const longitude = latlng[1];
+
+  setTimeout(() => {
+    const map = L.map('map').setView([latitude, longitude], 5);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    }).addTo(map);
+    const marker = L.marker([latitude, longitude]);
+    marker.addTo(map);
+    marker.bindPopup(`<strong>${countryName}</strong>`).openPopup();
+    popupSkeletonLoader.value = false;
+  }, 2000);
+};
 
 // search country by name
 const searchCountryByName = async () => {
@@ -148,6 +180,16 @@ onMounted(() => {
                   ><span>{{ showSearchedCountryInfo.population.toLocaleString('en-US') }}</span>
                 </div>
                 <div>
+                  <strong
+                    >View Map :
+                    <Map
+                      class="inline-block cursor-pointer"
+                      @click="
+                        openMap(showSearchedCountryInfo.latlng, showSearchedCountryInfo.name.common)
+                      "
+                  /></strong>
+                </div>
+                <div>
                   <strong>Map Links : </strong
                   ><span
                     ><a
@@ -167,9 +209,27 @@ onMounted(() => {
                 </div>
               </div>
             </template>
+            <template>
+              <!-- this dialog open for view country map -->
+              <Dialog v-model:open="openModal">
+                <DialogContent
+                  class="sm:max-w-[80%] grid-rows-[auto_minmax(0,1fr)_auto] p-0 max-h-[90dvh]"
+                >
+                  <DialogHeader class="p-6 pb-0">
+                    <DialogTitle>View {{ showSearchedCountryInfo.name.common }} Map</DialogTitle>
+                    <DialogDescription></DialogDescription>
+                  </DialogHeader>
+                  <template v-if="popupSkeletonLoader">
+                    <Skeleton class="h-[80vh] w-[94%] rounded-xl m-auto" />
+                  </template>
+                  <div id="map" style="height: 85vh; width: 100%"></div>
+                </DialogContent>
+              </Dialog>
+            </template>
           </template>
         </template>
       </CardContent>
     </Card>
   </div>
+  <!-- <div id="map" style="height: 500px; width: 100%;"></div> -->
 </template>
